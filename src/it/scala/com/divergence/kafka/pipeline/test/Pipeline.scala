@@ -6,7 +6,7 @@ import scala.concurrent.Future
 import org.slf4j.LoggerFactory
 import org.apache.kafka.common.serialization._
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import com.divergence.kafka.pipeline.{Pipeline => KafkaPipeline, Handle, Consumer, Producer}
+import com.divergence.kafka.pipeline.{Pipeline => KafkaPipeline, Handle, Record, Consumer, Producer}
 
 
 class Pipeline(consumerProperties: Properties,
@@ -27,7 +27,7 @@ class Pipeline(consumerProperties: Properties,
     consumerProperties, new StringSerializer, new StringSerializer, producerTopic)
   private val _pipeline = new KafkaPipeline[IK, IV, OK, OV](_consumer, _process, _producer, handle)
 
-  private def _process(record: ConsumerRecord[IK, IV]): Future[(OK, OV)] = {
+  private def _process(record: ConsumerRecord[IK, IV]): Future[Record[OK, OV]] = {
     val input = (record.key, record.value)
     _processed.put(record.key, Unit)
     _logger.info(s"(process) $input")
