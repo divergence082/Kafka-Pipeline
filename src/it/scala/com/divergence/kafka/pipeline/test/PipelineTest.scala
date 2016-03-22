@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import scala.concurrent.duration._
 import scala.concurrent.{Promise, Future, Await}
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, FunSuite}

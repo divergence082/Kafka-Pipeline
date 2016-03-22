@@ -3,6 +3,7 @@ package com.divergence.kafka.pipeline.test
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 import org.apache.kafka.common.serialization._
 import org.apache.kafka.clients.consumer.ConsumerRecord
