@@ -6,12 +6,11 @@ lazy val kafkaPipeline = Project(
   settings = Defaults.coreDefaultSettings ++ Seq(
     organization := "com.divergence",
     name := "kafka.pipeline",
-    version := "1.0",
+    version := "0.0.1",
     scalaVersion := "2.11.8",
     isSnapshot := true,
     libraryDependencies ++= Seq(
-      "org.apache.kafka" %% "kafka"           % "0.9.0.1",
-      "com.typesafe"     %  "config"          % "1.3.0",
+      "org.apache.kafka" %% "kafka"           % "0.10.0.0",
       "org.scalatest"    %% "scalatest"       % "3.0.0-M15" % "it,test")))
   .configs(IntegrationTest)
   .settings(Defaults.itSettings : _*)

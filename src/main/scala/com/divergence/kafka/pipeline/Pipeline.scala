@@ -3,7 +3,7 @@ package com.divergence.kafka.pipeline
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
-import org.apache.kafka.clients.consumer.ConsumerRecords
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 
 
@@ -20,15 +20,14 @@ class Pipeline[IK, IV, OK, OV](consumer: Consumer[IK, IV],
     producer.put(key, value)
   }
 
-  private def _process(records: ConsumerRecords[IK, IV]): Future[Unit] =
-    Future {
-      val it = records.iterator()
-      while (it.hasNext) {
-        val record = it.next()
-        _logger.trace(s"(process) $record")
-        process(record).flatMap(_produce).flatMap(handle)
-      }
-    }
+  private def _process(record: ConsumerRecord[IK, IV]): Future[Unit] = {
+    _logger.trace(s"(process) $record")
+
+    for {
+      records <- process(record)
+      _ <- Future(records.foreach(_produce))
+    } yield Unit
+  }
 
   def run(): Unit =
     try {

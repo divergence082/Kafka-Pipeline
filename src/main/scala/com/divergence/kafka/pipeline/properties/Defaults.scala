@@ -1,7 +1,7 @@
 package com.divergence.kafka.pipeline.properties
 
-import org.apache.kafka.clients.consumer.{RangeAssignor, OffsetResetStrategy}
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner
+import org.apache.kafka.clients.consumer.{RangeAssignor, OffsetResetStrategy}
 
 
 object Defaults {

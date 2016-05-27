@@ -2,10 +2,13 @@ package com.divergence.kafka.pipeline
 
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConversions._
 import org.slf4j.LoggerFactory
-import org.apache.kafka.common.serialization.Deserializer
+import org.apache.kafka.common.errors.WakeupException
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.serialization.Deserializer
 
 
 class Consumer[K, V](properties: Properties,
@@ -17,22 +20,34 @@ class Consumer[K, V](properties: Properties,
   private val _isClosed = new AtomicBoolean(false)
   private val _consumer = new KafkaConsumer(properties, keyDeserializer, valueDeserializer)
 
-  def run(process: ProcessConsumerRecords[K, V]): Unit =
+  def run(process: ProcessConsumerRecord[K, V]): Unit =
     try {
       _consumer.subscribe(topics)
 
       while (!_isClosed.get()) {
-        process(_consumer.poll(0))
+        val it = _consumer.poll(0).iterator()
+        Future(it.foreach(process))
       }
     } catch {
-      case e: Exception => _logger.error("(run) caught ${e.getMessage}")
+      case e: WakeupException =>
+        if (!_isClosed.get) {
+          throw e
+        } else {
+          _logger.info(s"(run) exception caught: ${e.getMessage}")
+        }
+    } finally {
+      try {
+        _isClosed.set(true)
+        _consumer.commitSync()
+        _consumer.unsubscribe()
+      } finally {
+        _consumer.close()
+      }
     }
 
   def close(): Unit = {
     _logger.info("(close)")
     _isClosed.set(true)
-    _consumer.commitSync()
-    _consumer.unsubscribe()
-    _consumer.close()
+    _consumer.wakeup()
   }
 }
