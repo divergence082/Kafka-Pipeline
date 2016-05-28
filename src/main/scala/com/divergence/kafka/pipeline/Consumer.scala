@@ -3,8 +3,8 @@ package com.divergence.kafka.pipeline
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicBoolean
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConversions._
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 import org.apache.kafka.common.errors.WakeupException
 import org.apache.kafka.clients.consumer.KafkaConsumer

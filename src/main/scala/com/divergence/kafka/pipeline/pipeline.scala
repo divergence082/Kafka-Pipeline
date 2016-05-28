@@ -1,5 +1,7 @@
 package com.divergence.kafka
 
+import java.util.Properties
+import java.io.FileInputStream
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.kafka.clients.producer.RecordMetadata
@@ -14,4 +16,10 @@ package object pipeline {
   type Process[IK, IV, OK, OV] = (ConsumerRecord[IK, IV]) => Future[Records[OK, OV]]
 
   def handle(meta: RecordMetadata): Future[Unit] = Future(Unit)
+
+  def properties(path: String): Properties = {
+    val properties = new Properties()
+    properties.load(new FileInputStream(path))
+    properties
+  }
 }
