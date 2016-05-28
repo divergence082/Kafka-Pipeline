@@ -1,12 +1,6 @@
 # Kafka-Pipeline
 
-Lightweight library for processing messages from one topic to another topic   
-
-Tests:     
-------
-```
-sbt test
-```
+Lightweight library for processing messages from one Kafka topic to another   
   
 Integration tests:  
 -----------------
