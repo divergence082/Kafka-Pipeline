@@ -1,9 +1,44 @@
 
 
+lazy val publishSettings = Seq(
+  publishMavenStyle := true,
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false },
+  pomExtra := (
+    <url>https://github.com/divergence082/Kafka-Pipeline</url>
+      <licenses>
+        <license>
+          <name>BSD-style</name>
+          <url>http://www.opensource.org/licenses/bsd-license.php</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <scm>
+        <url>git@github.com:divergence082/Kafka-Pipeline.git</url>
+        <connection>scm:git:git@github.com:divergence082/Kafka-Pipeline.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>divergence082</id>
+          <name>Valeria Kononenko</name>
+          <email>divergence082@gmail.com</email>
+          <url>https://github.com/divergence082</url>
+        </developer>
+      </developers>)
+)
+
+
 lazy val kafkaPipeline = Project(
   id = "kafka-pipeline",
   base = file("."),
-  settings = Defaults.coreDefaultSettings ++ Seq(
+  settings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
     organization := "com.divergence",
     name := "kafka.pipeline",
     version := "0.0.1",
