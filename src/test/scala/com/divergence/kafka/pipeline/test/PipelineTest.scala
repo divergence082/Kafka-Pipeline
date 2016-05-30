@@ -1,18 +1,21 @@
 package com.divergence.kafka.pipeline.test
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
-import scala.concurrent.{Promise, Future}
+import scala.concurrent.Future
+import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.serialization.{StringSerializer, StringDeserializer}
 import org.scalatest.{fixture, Outcome}
-import org.scalatest.concurrent.AsyncAssertions.Waiter
+import org.scalatest.time.SpanSugar._
+import org.scalatest.concurrent.Waiters
 import com.divergence.kafka.pipeline
 
 
-class PipelineTest extends fixture.FunSuite {
+class PipelineTest extends fixture.FunSuite with Waiters {
   type K = String
   type V = String
 
@@ -24,11 +27,12 @@ class PipelineTest extends fixture.FunSuite {
                           outConsumer: pipeline.Consumer[K, V],
                           outProducer: pipeline.Producer[K, V],
                           outTopic: String,
-                          load: Int)
+                          load: Int,
+                          timeToProcess: Long)
 
   override def withFixture(test: OneArgTest): Outcome = {
     val inTopic = test.configMap.getRequired[String]("intopic")
-    val outTopic = test.configMap.getRequired[String]("intopic")
+    val outTopic = test.configMap.getRequired[String]("outtopic")
 
     val inConsumer = consumer(test.configMap.getRequired[String]("incpp"), inTopic)
     val inProducer = producer(test.configMap.getRequired[String]("inppp"), inTopic)
@@ -39,7 +43,8 @@ class PipelineTest extends fixture.FunSuite {
     try {
       test(
         FixtureParam(inConsumer, inProducer, inTopic, outConsumer, outProducer, outTopic,
-          test.configMap.getRequired[Int]("load")))
+          test.configMap.getRequired[String]("load").toInt,
+          test.configMap.getRequired[String]("ttp").toLong))
     } finally {
       inConsumer.close()
       outConsumer.close()
@@ -60,13 +65,17 @@ class PipelineTest extends fixture.FunSuite {
                      process: pipeline.Process[K, V, K, V],
                      producer: pipeline.Producer[K, V],
                      handle: pipeline.Handle): Thread =
-    new Thread(new pipeline.Pipeline[K, V, K, V](consumer, process, producer, handle))
+    new Thread(
+      new pipeline.Pipeline[K, V, K, V](consumer, process, producer, handle),
+      "pipelineThread")
 
   def consumerThread(consumer: pipeline.Consumer[K, V],
                      process: pipeline.ProcessConsumerRecord[K, V]): Thread =
-    new Thread(new Runnable {
-      override def run(): Unit = consumer.run(process)
-    })
+    new Thread(
+      new Runnable {
+        override def run(): Unit = consumer.run(process)
+      },
+      "consumerThread")
 
   def increment(record: ConsumerRecord[K, V]): Future[pipeline.Records[K, V]] =
     Future {
@@ -74,18 +83,27 @@ class PipelineTest extends fixture.FunSuite {
       List(rec)
     }
 
-  test("test") { f =>
-    val done = Promise[Boolean]()
+  def checkIncrement(key: K, value: V): Boolean =
+    value.toInt == key.toInt + 1
+
+  test("All sent data should be processed correctly") { f =>
     val count = new AtomicInteger(0)
-    val received = new Array[Int](f.load)
-    val expected = 1.to(f.load)
+    val received = new ConcurrentHashMap[K, V]
+    val keys = 0.until(f.load).map(_.toString)
     val w = new Waiter
 
     def handle(meta: RecordMetadata): Future[Unit] =
       Future {
-        if (count.incrementAndGet() == f.load) {
-          logger.trace("done")
-          done.success(true)
+        if (count.incrementAndGet == f.load) {
+
+          received.entrySet().foreach { entry =>
+            val (k, v) = (entry.getKey, entry.getValue)
+
+            w(assert(keys.contains(k), "key should exist in sent set"))
+            w(assert(checkIncrement(k, v), "key should be incremented"))
+          }
+
+          w.dismiss()
         }
       }
 
@@ -93,12 +111,12 @@ class PipelineTest extends fixture.FunSuite {
       Future {
         val (k, v) = (record.key, record.value)
         logger.trace(s"received ($k, $v)")
-        received(k.toInt) = v.toInt
+        received.put(k, v)
       }
 
-    def produce(i: Int): Future[Unit] = {
+    def produce(i: String): Future[Unit] = {
       logger.trace(s"produce ($i)")
-      f.inProducer.put(i.toString, i.toString)
+      f.inProducer.put(i, i)
       Future(Unit)
     }
 
@@ -108,12 +126,8 @@ class PipelineTest extends fixture.FunSuite {
     pThread.start()
     cThread.start()
 
-    0.until(f.load).foreach(produce)
-    done.future.map{ _ =>
-      w(assert(received.sameElements(expected), "wrong received values"))
-      w.dismiss()
-    }
+    keys.foreach(produce)
 
-    w.await()
+    w.await(timeout((f.timeToProcess * f.load).millis), dismissals(1))
   }
 }

@@ -14,6 +14,7 @@ class Producer[K, V](properties: Properties,
 
   private val _logger = LoggerFactory.getLogger(this.getClass)
   private val _producer = new KafkaProducer(properties, keySerializer, valueSerializer)
+  private val _clientId = properties.getProperty("client.id")
 
   private def _callback(promise: Promise[RecordMetadata]): Callback =
     new Callback {
@@ -34,7 +35,7 @@ class Producer[K, V](properties: Properties,
   }
 
   def close(): Unit = {
-    _logger.info("(close)")
+    _logger.info(s"(close) [${_clientId}]")
     _producer.close()
   }
 }

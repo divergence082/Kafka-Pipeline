@@ -19,6 +19,7 @@ class Consumer[K, V](properties: Properties,
   private val _logger = LoggerFactory.getLogger(this.getClass)
   private val _isClosed = new AtomicBoolean(false)
   private val _consumer = new KafkaConsumer(properties, keyDeserializer, valueDeserializer)
+  private val _clientId = properties.getProperty("client.id")
 
   def run(process: ProcessConsumerRecord[K, V]): Unit =
     try {
@@ -33,7 +34,7 @@ class Consumer[K, V](properties: Properties,
         if (!_isClosed.get) {
           throw e
         } else {
-          _logger.info(s"(run) exception caught: ${e.getMessage}")
+          _logger.info(s"(run) [${_clientId}] exception caught: ${e.getMessage}")
         }
     } finally {
       try {
@@ -46,7 +47,7 @@ class Consumer[K, V](properties: Properties,
     }
 
   def close(): Unit = {
-    _logger.info("(close)")
+    _logger.info(s"(close) [${_clientId}]")
     _isClosed.set(true)
     _consumer.wakeup()
   }

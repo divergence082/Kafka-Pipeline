@@ -5,7 +5,7 @@ Lightweight library for processing messages from one Kafka topic to another
 Integration tests:  
 -----------------
 ```
-sbt it:test
+sbt "test-only com.divergence.kafka.pipeline.test.PipelineTest -- -Dintopic=in -Douttopic=out -Dincpp=src/test/resources/in-consumer.properties -Dinppp=src/test/resources/in-producer.properties -Doutcpp=src/test/resources/out-consumer.properties -Doutppp=src/test/resources/out-producer.properties -Dload=1000 -Dttp=1"
 ```
 
 Usage:
@@ -25,7 +25,8 @@ def process(record: ConsumerRecord[InputKey, InputValue]): Future[Record] =
   Future((record.key, record.value))
 
 val consumer = new pipeline.Consumer[InputKey, InputValue](
-  consumerProperties, new StringDeserializer, new StringDeserializer, List("consumer-topic"))
+  consumerProperties, new StringDeserializer, new StringDeserializer, 
+  List("consumer-topic-0", "consumer-topic-1"))
   
 val producer = new pipeline.Producer[OutputKey, OutputValue](
   consumerProperties, new StringSerializer, new StringSerializer, "producer-topic")

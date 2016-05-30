@@ -14,10 +14,10 @@ class Pipeline[IK, IV, OK, OV](consumer: Consumer[IK, IV],
 
   private val _logger = LoggerFactory.getLogger(this.getClass)
 
-  private def _produce(record: Record[OK, OV]): Future[RecordMetadata] = {
+  private def _produce(record: Record[OK, OV]): Future[Unit] = {
     val (key, value) = record
     _logger.trace(s"(produce) ($key, $value)")
-    producer.put(key, value)
+    producer.put(key, value).flatMap(handle)
   }
 
   private def _process(record: ConsumerRecord[IK, IV]): Future[Unit] = {
