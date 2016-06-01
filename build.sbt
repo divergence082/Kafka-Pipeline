@@ -41,9 +41,8 @@ lazy val kafkaPipeline = Project(
   settings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
     organization := "space.divergence",
     name := "kafka.pipeline",
-    version := "0.0.1",
+    version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.11.8",
-    isSnapshot := true,
     libraryDependencies ++= Seq(
       "org.apache.kafka" %% "kafka"           % "0.10.0.0"
         exclude("org.slf4j", "slf4j-log4j12")

@@ -2,8 +2,16 @@
 
 Lightweight library for processing messages from one Kafka topic to another   
   
-Integration tests:  
------------------
+  
+Sbt:
+----
+```
+libraryDependencies += "space.divergence" % "kafka.pipeline" % "0.0.1"
+```
+
+
+Integration tests:
+------------------
 ```
 sbt "test-only space.divergence.kafka.pipeline.PipelineTest -- -Dintopic=in -Douttopic=out -Dincpp=src/test/resources/in-consumer.properties -Dinppp=src/test/resources/in-producer.properties -Doutcpp=src/test/resources/out-consumer.properties -Doutppp=src/test/resources/out-producer.properties -Dload=1000 -Dttp=1"
 ```
