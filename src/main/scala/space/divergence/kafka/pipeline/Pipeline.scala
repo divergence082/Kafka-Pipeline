@@ -1,10 +1,9 @@
-package com.divergence.kafka.pipeline
+package space.divergence.kafka.pipeline
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.slf4j.LoggerFactory
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.apache.kafka.clients.producer.RecordMetadata
 
 
 class Pipeline[IK, IV, OK, OV](consumer: Consumer[IK, IV],

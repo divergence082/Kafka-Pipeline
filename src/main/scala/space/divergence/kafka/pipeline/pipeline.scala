@@ -1,4 +1,4 @@
-package com.divergence.kafka
+package space.divergence.kafka
 
 import java.util.Properties
 import java.io.FileInputStream

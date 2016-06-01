@@ -1,4 +1,4 @@
-package com.divergence.kafka.pipeline
+package space.divergence.kafka.pipeline
 
 import java.util.Properties
 import scala.concurrent.{Future, Promise}

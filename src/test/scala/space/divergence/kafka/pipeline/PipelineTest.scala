@@ -1,4 +1,4 @@
-package com.divergence.kafka.pipeline.test
+package space.divergence.kafka.pipeline
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -12,7 +12,6 @@ import org.apache.kafka.common.serialization.{StringSerializer, StringDeserializ
 import org.scalatest.{fixture, Outcome}
 import org.scalatest.time.SpanSugar._
 import org.scalatest.concurrent.Waiters
-import com.divergence.kafka.pipeline
 
 
 class PipelineTest extends fixture.FunSuite with Waiters {
@@ -21,11 +20,11 @@ class PipelineTest extends fixture.FunSuite with Waiters {
 
   val logger = LoggerFactory.getLogger(this.getClass)
 
-  case class FixtureParam(inConsumer: pipeline.Consumer[K, V],
-                          inProducer: pipeline.Producer[K, V],
+  case class FixtureParam(inConsumer: Consumer[K, V],
+                          inProducer: Producer[K, V],
                           inTopic: String,
-                          outConsumer: pipeline.Consumer[K, V],
-                          outProducer: pipeline.Producer[K, V],
+                          outConsumer: Consumer[K, V],
+                          outProducer: Producer[K, V],
                           outTopic: String,
                           load: Int,
                           timeToProcess: Long)
@@ -53,31 +52,31 @@ class PipelineTest extends fixture.FunSuite with Waiters {
     }
   }
 
-  def consumer(propertiesPath: String, topic: String): pipeline.Consumer[K, V] =
-    new pipeline.Consumer[K, V](pipeline.properties(propertiesPath),
+  def consumer(propertiesPath: String, topic: String): Consumer[K, V] =
+    new Consumer[K, V](properties(propertiesPath),
       new StringDeserializer, new StringDeserializer, List(topic))
 
-  def producer(propertiesPath: String, topic: String): pipeline.Producer[K, V] =
-    new pipeline.Producer[K, V](pipeline.properties(propertiesPath),
+  def producer(propertiesPath: String, topic: String): Producer[K, V] =
+    new Producer[K, V](properties(propertiesPath),
       new StringSerializer, new StringSerializer, topic)
 
-  def pipelineThread(consumer: pipeline.Consumer[K, V],
-                     process: pipeline.Process[K, V, K, V],
-                     producer: pipeline.Producer[K, V],
-                     handle: pipeline.Handle): Thread =
+  def pipelineThread(consumer: Consumer[K, V],
+                     process: Process[K, V, K, V],
+                     producer: Producer[K, V],
+                     handle: Handle): Thread =
     new Thread(
-      new pipeline.Pipeline[K, V, K, V](consumer, process, producer, handle),
+      new Pipeline[K, V, K, V](consumer, process, producer, handle),
       "pipelineThread")
 
-  def consumerThread(consumer: pipeline.Consumer[K, V],
-                     process: pipeline.ProcessConsumerRecord[K, V]): Thread =
+  def consumerThread(consumer: Consumer[K, V],
+                     process: ProcessConsumerRecord[K, V]): Thread =
     new Thread(
       new Runnable {
         override def run(): Unit = consumer.run(process)
       },
       "consumerThread")
 
-  def increment(record: ConsumerRecord[K, V]): Future[pipeline.Records[K, V]] =
+  def increment(record: ConsumerRecord[K, V]): Future[Records[K, V]] =
     Future {
       val rec = (record.key(), (record.value().toInt + 1).toString)
       List(rec)

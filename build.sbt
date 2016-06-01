@@ -12,7 +12,7 @@ lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
   pomExtra := (
-    <url>https://github.com/divergence082/Kafka-Pipeline</url>
+    <url>https://github.com/divergence082/space.divergence.kafka.pipeline</url>
       <licenses>
         <license>
           <name>BSD-style</name>
@@ -21,8 +21,8 @@ lazy val publishSettings = Seq(
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:divergence082/Kafka-Pipeline.git</url>
-        <connection>scm:git:git@github.com:divergence082/Kafka-Pipeline.git</connection>
+        <url>git@github.com:divergence082/space.divergence.kafka.pipeline.git</url>
+        <connection>scm:git:git@github.com:divergence082/space.divergence.kafka.pipeline.git</connection>
       </scm>
       <developers>
         <developer>
@@ -39,7 +39,7 @@ lazy val kafkaPipeline = Project(
   id = "kafka-pipeline",
   base = file("."),
   settings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
-    organization := "com.divergence",
+    organization := "space.divergence",
     name := "kafka.pipeline",
     version := "0.0.1",
     scalaVersion := "2.11.8",
