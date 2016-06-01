@@ -6,7 +6,11 @@ Lightweight library for processing messages from one Kafka topic to another
 Sbt:
 ----
 ```
-libraryDependencies += "space.divergence" % "kafka.pipeline" % "0.0.1"
+libraryDependencies += "space.divergence" % "kafka-pipeline_2.11" % "0.0.1"
+```
+or
+```
+libraryDependencies += "space.divergence" %% "kafka-pipeline" % "0.0.1"
 ```
 
 Usage:

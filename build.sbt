@@ -12,7 +12,9 @@ lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
   pomExtra := (
-    <url>https://github.com/divergence082/space.divergence.kafka.pipeline</url>
+    <name>space.divergence:kafka-pipeline</name>
+    <description>Lightweight library for processing messages from one Kafka topic to another</description>
+    <url>https://github.com/divergence082/Kafka-Pipeline</url>
       <licenses>
         <license>
           <name>BSD-style</name>
@@ -21,15 +23,16 @@ lazy val publishSettings = Seq(
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:divergence082/space.divergence.kafka.pipeline.git</url>
-        <connection>scm:git:git@github.com:divergence082/space.divergence.kafka.pipeline.git</connection>
+        <url>git@github.com:divergence082/Kafka-Pipeline.git</url>
+        <connection>scm:git:git@github.com:divergence082/Kafka-Pipeline.git</connection>
+        <developerConnection>scm:git:git@github.com:divergence082/Kafka-Pipeline.git</developerConnection>
       </scm>
       <developers>
         <developer>
           <id>divergence082</id>
           <name>Valeria Kononenko</name>
           <email>divergence082@gmail.com</email>
-          <url>https://github.com/divergence082</url>
+          <url>http://divergence.space</url>
         </developer>
       </developers>)
 )
