@@ -12,8 +12,6 @@ lazy val publishSettings = Seq(
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
   pomExtra := (
-    <name>space.divergence:kafka-pipeline</name>
-    <description>Lightweight library for processing messages from one Kafka topic to another</description>
     <url>https://github.com/divergence082/Kafka-Pipeline</url>
       <licenses>
         <license>
@@ -43,11 +41,11 @@ lazy val kafkaPipeline = Project(
   base = file("."),
   settings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
     organization := "space.divergence",
-    name := "kafka.pipeline",
-    version := "0.0.1-SNAPSHOT",
+    name := "kafka-pipeline",
+    version := "0.0.1",
     scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
-      "org.apache.kafka" %% "kafka"           % "0.10.0.0"
+      "org.apache.kafka" %% "kafka" % "0.10.0.0"
         exclude("org.slf4j", "slf4j-log4j12")
         exclude("javax.jms", "jms")
         exclude("com.sun.jdmk", "jmxtools")
