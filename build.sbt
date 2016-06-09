@@ -39,7 +39,7 @@ lazy val publishSettings = Seq(
 lazy val kafkaPipeline = Project(
   id = "kafka-pipeline",
   base = file("."),
-  settings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
+  settings = Defaults.coreDefaultSettings ++ Defaults.itSettings ++ publishSettings ++ Seq(
     organization := "space.divergence",
     name := "kafka-pipeline",
     version := "0.0.1",
@@ -52,6 +52,7 @@ lazy val kafkaPipeline = Project(
         exclude("com.sun.jmx", "jmxri"),
       "ch.qos.logback"   %  "logback-classic" % "1.1.7",
       "org.scalatest"    %% "scalatest"       % "3.0.0-RC1" % "test")))
+  .configs(IntegrationTest)
   .settings(
     testOptions in Test := Seq(Tests.Filter(s => s.endsWith("Test"))))
   .settings(

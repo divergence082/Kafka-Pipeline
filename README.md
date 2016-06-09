@@ -46,5 +46,5 @@ thread.start()
 Tests:
 ------------------
 ```
-sbt "test-only space.divergence.kafka.pipeline.PipelineTest -- -Dintopic=in -Douttopic=out -Dincpp=src/test/resources/in-consumer.properties -Dinppp=src/test/resources/in-producer.properties -Doutcpp=src/test/resources/out-consumer.properties -Doutppp=src/test/resources/out-producer.properties -Dload=1000 -Dttp=1"
+sbt "it:test-only space.divergence.kafka.pipeline.PipelineTest -- -Dintopic=in -Douttopic=out -Dincpp=src/test/resources/in-consumer.properties -Dinppp=src/test/resources/in-producer.properties -Doutcpp=src/test/resources/out-consumer.properties -Doutppp=src/test/resources/out-producer.properties -Dload=1000 -Dttp=1"
 ```
